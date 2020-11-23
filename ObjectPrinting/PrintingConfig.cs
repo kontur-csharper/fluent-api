@@ -1,41 +1,32 @@
-using System;
-using System.Linq;
-using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Reflection;
 
 namespace ObjectPrinting
 {
-    public class PrintingConfig<TOwner>
+    public class PrintingConfig
     {
-        public string PrintToString(TOwner obj)
+        public readonly Dictionary<Type, CultureInfo> CultureTypes =
+            new Dictionary<Type, CultureInfo>();
+
+        public readonly HashSet<MemberInfo> ExcludingMembers = new HashSet<MemberInfo>();
+        public readonly HashSet<Type> ExcludingTypes = new HashSet<Type>();
+
+        public readonly HashSet<Type> FinalTypes = new HashSet<Type>
         {
-            return PrintToString(obj, 0);
-        }
+            typeof(string), typeof(DateTime), typeof(TimeSpan), typeof(Guid), typeof(DateTimeOffset)
+        };
 
-        private string PrintToString(object obj, int nestingLevel)
-        {
-            //TODO apply configurations
-            if (obj == null)
-                return "null" + Environment.NewLine;
+        public readonly Dictionary<MemberInfo, Delegate> PrintingFunctionsForMembers =
+            new Dictionary<MemberInfo, Delegate>();
 
-            var finalTypes = new[]
-            {
-                typeof(int), typeof(double), typeof(float), typeof(string),
-                typeof(DateTime), typeof(TimeSpan)
-            };
-            if (finalTypes.Contains(obj.GetType()))
-                return obj + Environment.NewLine;
+        public readonly Dictionary<Type, Delegate> PrintingFunctionsForTypes =
+            new Dictionary<Type, Delegate>();
 
-            var identation = new string('\t', nestingLevel + 1);
-            var sb = new StringBuilder();
-            var type = obj.GetType();
-            sb.AppendLine(type.Name);
-            foreach (var propertyInfo in type.GetProperties())
-            {
-                sb.Append(identation + propertyInfo.Name + " = " +
-                          PrintToString(propertyInfo.GetValue(obj),
-                              nestingLevel + 1));
-            }
-            return sb.ToString();
-        }
+        public readonly HashSet<object> VisitedObjects = new HashSet<object>();
+
+        public string Indentation = "\t";
+        public string SeparatorBetweenNameAndValue = "=";
     }
 }
