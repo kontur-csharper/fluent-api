@@ -1,41 +1,97 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace ObjectPrinting
 {
     public class PrintingConfig<TOwner>
     {
-        public string PrintToString(TOwner obj)
+        private readonly Dictionary<PropertyInfo, Func<object, string>> customPropertyPrinters;
+        private readonly Dictionary<Type, Func<object, string>> customTypePrinters;
+        private readonly HashSet<PropertyInfo> excludedProperties;
+        private readonly HashSet<Type> excludedPropTypes;
+
+        private readonly Type[] finalNotPrimitiveTypes =
         {
-            return PrintToString(obj, 0);
+            typeof(string), typeof(DateTime), typeof(TimeSpan), typeof(Guid),
+            typeof(decimal), typeof(DateTimeOffset)
+        };
+
+        public PrintingConfig()
+        {
+            excludedPropTypes = new HashSet<Type>();
+            excludedProperties = new HashSet<PropertyInfo>();
+            customTypePrinters = new Dictionary<Type, Func<object, string>>();
+            customPropertyPrinters = new Dictionary<PropertyInfo, Func<object, string>>();
         }
 
-        private string PrintToString(object obj, int nestingLevel)
+        public int maxSerializationDepth { get; private set; } = 50;
+
+        public TypePrintingConfig<TOwner, TPropType> Printing<TPropType>()
         {
-            //TODO apply configurations
-            if (obj == null)
-                return "null" + Environment.NewLine;
+            return new TypePrintingConfig<TOwner, TPropType>(this);
+        }
 
-            var finalTypes = new[]
-            {
-                typeof(int), typeof(double), typeof(float), typeof(string),
-                typeof(DateTime), typeof(TimeSpan)
-            };
-            if (finalTypes.Contains(obj.GetType()))
-                return obj + Environment.NewLine;
+        public PropertyPrintingConfig<TOwner, TPropType> Printing<TPropType>(
+            Expression<Func<TOwner, TPropType>> memberSelector)
+        {
+            return new PropertyPrintingConfig<TOwner, TPropType>(this, memberSelector);
+        }
 
-            var identation = new string('\t', nestingLevel + 1);
-            var sb = new StringBuilder();
-            var type = obj.GetType();
-            sb.AppendLine(type.Name);
-            foreach (var propertyInfo in type.GetProperties())
-            {
-                sb.Append(identation + propertyInfo.Name + " = " +
-                          PrintToString(propertyInfo.GetValue(obj),
-                              nestingLevel + 1));
-            }
-            return sb.ToString();
+        public PrintingConfig<TOwner> Excluding<TPropType>(
+            Expression<Func<TOwner, TPropType>> memberSelector)
+        {
+            excludedProperties.Add(memberSelector.GetPropertyInfo());
+            return this;
+        }
+
+        public PrintingConfig<TOwner> Excluding<TPropType>()
+        {
+            excludedPropTypes.Add(typeof(TPropType));
+            return this;
+        }
+
+        public PrintingConfig<TOwner> Using<TPropType>(Func<TPropType, string> print)
+        {
+            customTypePrinters[typeof(TPropType)] = obj => print((TPropType) obj);
+            return this;
+        }
+
+        public PrintingConfig<TOwner> Using<TPropType>(
+            Expression<Func<TOwner, TPropType>> memberSelector,
+            Func<TPropType, string> print)
+        {
+            customPropertyPrinters[memberSelector.GetPropertyInfo()] = obj => print((TPropType) obj);
+            return this;
+        }
+
+        public PrintingConfig<TOwner> LimitingSerializationDepth(int maxDepth)
+        {
+            maxSerializationDepth = maxDepth;
+            return this;
+        }
+
+        public bool IsFinal(Type type)
+        {
+            return type.IsPrimitive || finalNotPrimitiveTypes.Contains(type);
+        }
+
+        public bool IsExcluded(PropertyInfo propInfo)
+        {
+            return excludedPropTypes.Contains(propInfo.PropertyType) || excludedProperties.Contains(propInfo);
+        }
+
+        public bool TryGetCustomPrinter(PropertyInfo propInfo, out Func<object, string> result)
+        {
+            return customPropertyPrinters.TryGetValue(propInfo, out result) ||
+                   customTypePrinters.TryGetValue(propInfo.PropertyType, out result);
+        }
+
+        public string PrintToString(TOwner obj)
+        {
+            return new ObjectPrinter<TOwner>(this).PrintToString(obj);
         }
     }
 }
