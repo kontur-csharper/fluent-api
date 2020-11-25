@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 
-namespace ObjectPrinting.Solved.Tests
+namespace ObjectPrintingTests
 {
     public class Person
     {
@@ -8,5 +9,8 @@ namespace ObjectPrinting.Solved.Tests
         public string Name { get; set; }
         public double Height { get; set; }
         public int Age { get; set; }
+
+        public string[] Wallet { get; set; }
+        public Dictionary<string, string> RelativesNames { get; set; }
     }
 }
