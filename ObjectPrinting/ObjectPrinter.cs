@@ -1,10 +1,19 @@
+using System;
+
 namespace ObjectPrinting
 {
-    public class ObjectPrinter
+    public static class ObjectPrinter
     {
-        public static PrintingConfig<T> For<T>()
+        public static PrintingConfigBuilder<T> For<T>() => PrintingConfigBuilder<T>.Default();
+
+        public static string Serialize<T>(this T target) =>
+            PrintingConfigBuilder<T>.Default().Build().PrintToString(target);
+
+        public static string Serialize<T>(this T target, Action<PrintingConfigBuilder<T>> configurator)
         {
-            return new PrintingConfig<T>();
+            var printingConfig = For<T>();
+            configurator.Invoke(printingConfig);
+            return printingConfig.Build().PrintToString(target);
         }
     }
 }
