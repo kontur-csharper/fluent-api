@@ -12,6 +12,8 @@ namespace ObjectPrinting.Solved
             this.printingConfig = printingConfig;
         }
 
+        PrintingConfig<TOwner> IPropertyPrintingConfig<TOwner, TPropType>.ParentConfig => printingConfig;
+
         public PrintingConfig<TOwner> Using(Func<TPropType, string> print)
         {
             return printingConfig;
@@ -21,8 +23,6 @@ namespace ObjectPrinting.Solved
         {
             return printingConfig;
         }
-
-        PrintingConfig<TOwner> IPropertyPrintingConfig<TOwner, TPropType>.ParentConfig => printingConfig;
     }
 
     public interface IPropertyPrintingConfig<TOwner, TPropType>
