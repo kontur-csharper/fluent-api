@@ -1,0 +1,9 @@
+Person
+	Id = 00000000-0000-0000-0000-000000000000
+	Family = null
+	Name = null
+	Surname = null
+	Height = this is height
+	Age = 0
+	BirthDay = 01.01.0001 0:00:00
+	Spouse = null

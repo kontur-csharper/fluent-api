@@ -1,0 +1,5 @@
+Int64
+	MaxValue = Infinite loop
+	MinValue = Int64
+		MaxValue = Infinite loop
+		MinValue = Infinite loop

@@ -1,41 +1,73 @@
 using System;
-using System.Linq;
-using System.Text;
+using System.Linq.Expressions;
+using System.Reflection;
+using ObjectPrinting.Contexts;
+using ObjectPrinting.Contracts;
 
 namespace ObjectPrinting
 {
-    public class PrintingConfig<TOwner>
+    public class PrintingConfig<TOwner> : IPrintingConfig
     {
-        public string PrintToString(TOwner obj)
+        private PrintExcluder Excluder { get; }
+        private AlternativePrinter AlternativePrinter { get; }
+        AlternativePrinter IPrintingConfig.AlternativePrinter => AlternativePrinter;
+        PrintExcluder IPrintingConfig.PrintExcluder => Excluder;
+
+        public PrintingConfig() : this(new PrintExcluder(), new AlternativePrinter()) { }
+
+        private PrintingConfig(PrintExcluder excluder, AlternativePrinter alternativePrinter)
         {
-            return PrintToString(obj, 0);
+            Excluder = excluder;
+            AlternativePrinter = alternativePrinter;
         }
 
-        private string PrintToString(object obj, int nestingLevel)
+        public string PrintToString(TOwner obj)
         {
-            //TODO apply configurations
-            if (obj == null)
-                return "null" + Environment.NewLine;
+            var serializer = new Serializer(this);
+            return serializer.PrintToString(obj, 0);
+        }
 
-            var finalTypes = new[]
+        public TypePrintingConfig<TOwner, TPropType> Printing<TPropType>() =>
+            new TypePrintingConfig<TOwner, TPropType>(this);
+
+        public IContextPrintingConfig<TOwner, TContext> Printing<TContext>(
+            Expression<Func<TOwner, TContext>> memberSelector
+        )
+        {
+            var entity = GetClassMemberEntity(memberSelector);
+
+            if (entity is PropertyInfo)
+                return new PropertyPrintingConfig<TOwner, TContext>(this, entity);
+            return new FieldPrintingConfig<TOwner, TContext>(this, entity);
+        }
+
+        public PrintingConfig<TOwner> Excluding<TContext>(Expression<Func<TOwner, TContext>> memberSelector)
+        {
+            var entity = GetClassMemberEntity(memberSelector);
+            return new PrintingConfig<TOwner>(Excluder.Exclude(entity), AlternativePrinter);
+        }
+
+        public PrintingConfig<TOwner> Excluding<TPropType>() =>
+            new PrintingConfig<TOwner>(Excluder.Exclude(typeof(TPropType)), AlternativePrinter);
+
+        IPrintingConfig IPrintingConfig.AddAlternativePrintingFor(Type type, Func<object, string> print) =>
+            new PrintingConfig<TOwner>(Excluder, AlternativePrinter.AddOrUpdate(type, print));
+
+        IPrintingConfig IPrintingConfig.AddAlternativePrintingFor(PropertyInfo property, Func<object, string> print) =>
+            new PrintingConfig<TOwner>(Excluder, AlternativePrinter.AddOrUpdate(property, print));
+
+        IPrintingConfig IPrintingConfig.AddAlternativePrintingFor(FieldInfo field, Func<object, string> print) =>
+            new PrintingConfig<TOwner>(Excluder, AlternativePrinter.AddOrUpdate(field, print));
+
+
+        private static dynamic GetClassMemberEntity<TContext>(Expression<Func<TOwner, TContext>> memberSelector)
+        {
+            return (memberSelector.Body as MemberExpression)?.Member switch
             {
-                typeof(int), typeof(double), typeof(float), typeof(string),
-                typeof(DateTime), typeof(TimeSpan)
+                PropertyInfo property => property,
+                FieldInfo field => field,
+                _ => throw new ArgumentException($"{memberSelector} should return field or property {nameof(TOwner)}")
             };
-            if (finalTypes.Contains(obj.GetType()))
-                return obj + Environment.NewLine;
-
-            var identation = new string('\t', nestingLevel + 1);
-            var sb = new StringBuilder();
-            var type = obj.GetType();
-            sb.AppendLine(type.Name);
-            foreach (var propertyInfo in type.GetProperties())
-            {
-                sb.Append(identation + propertyInfo.Name + " = " +
-                          PrintToString(propertyInfo.GetValue(obj),
-                              nestingLevel + 1));
-            }
-            return sb.ToString();
         }
     }
 }
