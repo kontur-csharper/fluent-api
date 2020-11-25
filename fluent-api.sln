@@ -1,17 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30611.23
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPrinting", "ObjectPrinting\ObjectPrinting.csproj", "{07B8C9B7-8289-46CB-9875-048A57758EEE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ObjectPrinting", "ObjectPrinting\ObjectPrinting.csproj", "{07B8C9B7-8289-46CB-9875-048A57758EEE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{6D308E4A-CEC7-4536-9B87-81CD337A87AD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentMapping", "Samples\FluentMapper\FluentMapping.csproj", "{FEEA5AFE-459A-4D13-81D0-252E1A2E6F4E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentMapping", "Samples\FluentMapper\FluentMapping.csproj", "{FEEA5AFE-459A-4D13-81D0-252E1A2E6F4E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentMapping.Tests", "Samples\FluentMapper.Tests\FluentMapping.Tests.csproj", "{8A7BB3EA-3E6A-4D04-A801-D5CD1620DA0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentMapping.Tests", "Samples\FluentMapper.Tests\FluentMapping.Tests.csproj", "{8A7BB3EA-3E6A-4D04-A801-D5CD1620DA0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spectacle", "Samples\Spectacle\Spectacle.csproj", "{EFA9335C-411B-4597-B0B6-5438D1AE04C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spectacle", "Samples\Spectacle\Spectacle.csproj", "{EFA9335C-411B-4597-B0B6-5438D1AE04C3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ObjectPrintingTests", "ObjectPrintingTests\ObjectPrintingTests.csproj", "{9EEE7DE8-1512-4DC5-A006-FA64538E44EA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +37,10 @@ Global
 		{EFA9335C-411B-4597-B0B6-5438D1AE04C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EFA9335C-411B-4597-B0B6-5438D1AE04C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EFA9335C-411B-4597-B0B6-5438D1AE04C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EEE7DE8-1512-4DC5-A006-FA64538E44EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EEE7DE8-1512-4DC5-A006-FA64538E44EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EEE7DE8-1512-4DC5-A006-FA64538E44EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EEE7DE8-1512-4DC5-A006-FA64538E44EA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -43,5 +49,8 @@ Global
 		{FEEA5AFE-459A-4D13-81D0-252E1A2E6F4E} = {6D308E4A-CEC7-4536-9B87-81CD337A87AD}
 		{8A7BB3EA-3E6A-4D04-A801-D5CD1620DA0D} = {6D308E4A-CEC7-4536-9B87-81CD337A87AD}
 		{EFA9335C-411B-4597-B0B6-5438D1AE04C3} = {6D308E4A-CEC7-4536-9B87-81CD337A87AD}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BFCE7598-2815-4107-9944-F003F37A0559}
 	EndGlobalSection
 EndGlobal

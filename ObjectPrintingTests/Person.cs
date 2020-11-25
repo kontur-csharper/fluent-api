@@ -1,9 +1,10 @@
 ﻿using System;
 
-namespace ObjectPrinting.Tests
+namespace ObjectPrintingTests
 {
     public class Person
     {
+        public string Surname;
         public Guid Id { get; set; }
         public string Name { get; set; }
         public double Height { get; set; }
