@@ -1,3 +1,5 @@
+using ObjectPrinting.Infrastructure;
+
 namespace ObjectPrinting
 {
     public class ObjectPrinter
