@@ -1,6 +1,6 @@
-namespace ObjectPrinting
+namespace ObjectPrinting.Core
 {
-    public class ObjectPrinter
+    public static class ObjectPrinter
     {
         public static PrintingConfig<T> For<T>()
         {
